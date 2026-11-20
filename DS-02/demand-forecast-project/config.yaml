@@ -1,0 +1,176 @@
+# Retail Demand Forecasting & Inventory Optimization Configuration
+
+# Data subset profiles (to manage memory/runtime on laptop)
+data:
+  # Profile: 'tiny' (debug), 'small' (demo), 'medium' (submission), 'full' (production)
+  profile: 'medium'
+  
+  # Profile definitions
+  profiles:
+    tiny:
+      states: ['CA']
+      stores: ['CA_1']  # Empty list = all stores in selected states
+      item_sample_fraction: 0.01  # 1% = ~30 items
+      
+    small:
+      states: ['CA']
+      stores: []  # All CA stores (CA_1 to CA_4)
+      item_sample_fraction: 0.05  # 5% = ~150 items
+      
+    medium:
+      states: ['CA', 'TX']
+      stores: []  # All stores in CA and TX (7 stores)
+      item_sample_fraction: 1.0  # 100% = all 3,049 items
+      
+    full:
+      states: ['CA', 'TX', 'WI']
+      stores: []  # All 10 stores
+      item_sample_fraction: 1.0  # 100% of 3,049 items
+  
+  # Random seed for reproducible item sampling
+  seed: 42
+
+# Date configuration (M5 dataset: d_1 to d_1969)
+dates:
+  # Training: d_1 to d_1913
+  train_end_day: 1913
+  
+  # Test (held-out): d_1914 to d_1941 (from sales_train_evaluation.csv)
+  test_days: 28
+  
+  # Backtest folds (rolling origin validation within training period)
+  backtest_folds: 2
+  fold_stride: 28  # Days between fold starts
+
+# Feature engineering
+features:
+  # Lag features (days)
+  lags: [7, 14, 28]
+  
+  # Rolling window features (days)
+  rolling_windows: [7, 28]
+  
+  # Price features
+  enable_price_features: true
+  price_change_threshold: 0.05  # 5% drop = promo proxy
+  
+  # Expanding statistics
+  enable_expanding_stats: true
+
+# Forecasting horizon
+models:
+  horizon: 28  # Days to forecast
+  
+  # Prophet configuration
+  prophet:
+    changepoint_prior_scale: 0.05
+    seasonality_prior_scale: 10.0
+    max_series_to_train: 50  # Train on aggregated + sample of bottom-level
+    
+  # LightGBM configuration
+  lgbm:
+    num_boost_round: 500
+    early_stopping_rounds: 50
+    params:
+      objective: 'regression'
+      metric: 'rmse'
+      learning_rate: 0.05
+      num_leaves: 31
+      feature_fraction: 0.8
+      bagging_fraction: 0.8
+      bagging_freq: 5
+      verbose: -1
+    quantiles: [0.1, 0.5, 0.9]  # For prediction intervals
+    
+  # TFT (Temporal Fusion Transformer) configuration
+  tft:
+    max_epochs: 30
+    batch_size: 128
+    learning_rate: 0.001
+    hidden_size: 64
+    attention_head_size: 4
+    dropout: 0.1
+    hidden_continuous_size: 8
+    quantiles: [0.1, 0.5, 0.9]
+    accelerator: 'auto'  # 'cpu' or 'gpu' if available
+
+# Hierarchical reconciliation
+reconciliation:
+  methods: ['bottom_up', 'top_down', 'mint_ols']
+  clip_negatives: true
+
+# ASSUMED PARAMETERS (NOT in M5 dataset)
+# These are clearly labeled assumptions for inventory optimization
+inventory:
+  # Unit costs ($/unit) - ASSUMED
+  unit_cost_default: 10.0
+  unit_cost_by_category:
+    HOBBIES: 15.0
+    HOUSEHOLD: 8.0
+    FOODS: 5.0
+  
+  # Holding cost (% of unit cost per day) - ASSUMED
+  holding_cost_pct_per_day: 0.001  # 0.1%/day = ~3%/month
+  
+  # Stockout penalty ($/unit of unmet demand) - ASSUMED
+  stockout_penalty_default: 25.0
+  stockout_penalty_by_category:
+    HOBBIES: 30.0
+    HOUSEHOLD: 20.0
+    FOODS: 25.0
+  
+  # Lead time (days) - ASSUMED
+  lead_time_default: 7
+  lead_time_by_category:
+    HOBBIES: 10
+    HOUSEHOLD: 7
+    FOODS: 5
+  
+  # Shelf life (days) - ASSUMED
+  shelf_life_by_category:
+    HOBBIES: 365  # Long
+    HOUSEHOLD: 180  # Medium
+    FOODS: 60  # Perishable
+  
+  # Storage capacity (cubic units per store) - ASSUMED
+  store_capacity: 100000
+  item_volume_default: 1.0
+  
+  # Budget constraint ($) - ASSUMED
+  budget_default: 500000
+  
+  # Order constraints - ASSUMED
+  pack_size_default: 6
+  min_order_qty: 6
+  
+  # Service level target
+  service_level_target: 0.95
+
+# Metrics configuration
+metrics:
+  # RMSSE baseline method
+  rmsse_baseline: 'naive'  # Naive forecast
+  
+  # Prediction interval coverage targets
+  interval_coverage_targets: [0.8, 0.9]
+
+# API configuration
+api:
+  title: 'Retail Demand Forecasting & Inventory Optimization API'
+  version: '1.0.0'
+  description: 'FastAPI backend for M5 forecasting, metrics, and order recommendations'
+  host: '127.0.0.1'
+  port: 8000
+
+# Dashboard configuration
+dashboard:
+  title: 'Retail Demand Forecasting Dashboard'
+  api_base_url: 'http://127.0.0.1:8000'
+  host: '127.0.0.1'
+  port: 8050
+  debug: false
+
+# Logging
+logging:
+  level: 'INFO'
+  format: '%(asctime)s - %(name)s - %(levelname)s - %(message)s'

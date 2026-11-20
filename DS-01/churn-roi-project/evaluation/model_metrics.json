@@ -1,0 +1,139 @@
+{
+  "churn_model": {
+    "model_name": "Churn Classification Model",
+    "model_type": "LightGBM Classifier",
+    "evaluation_date": "2026-11-19 17:12:10",
+    "total_samples": 7043,
+    "positive_class": 1869,
+    "negative_class": 5174,
+    "metrics": {
+      "accuracy": 0.8046287093568082,
+      "precision": 0.5896689705347399,
+      "recall": 0.8673087212413055,
+      "f1_score": 0.7020355132091814,
+      "roc_auc": 0.9005357796928006,
+      "pr_auc": 0.7454104031133675
+    },
+    "confusion_matrix": {
+      "true_negative": 4046,
+      "false_positive": 1128,
+      "false_negative": 248,
+      "true_positive": 1621
+    },
+    "classification_report": {
+      "0": {
+        "precision": 0.9422449930135072,
+        "recall": 0.7819868573637417,
+        "f1-score": 0.8546683565694972,
+        "support": 5174.0
+      },
+      "1": {
+        "precision": 0.5896689705347399,
+        "recall": 0.8673087212413055,
+        "f1-score": 0.7020355132091814,
+        "support": 1869.0
+      },
+      "accuracy": 0.8046287093568082,
+      "macro avg": {
+        "precision": 0.7659569817741235,
+        "recall": 0.8246477893025237,
+        "f1-score": 0.7783519348893393,
+        "support": 7043.0
+      },
+      "weighted avg": {
+        "precision": 0.8486819394833616,
+        "recall": 0.8046287093568082,
+        "f1-score": 0.8141641986480957,
+        "support": 7043.0
+      }
+    },
+    "risk_stratification": {
+      "high_risk": 1595,
+      "medium_risk": 1601,
+      "low_risk": 3847
+    }
+  },
+  "survival_model": {
+    "model_name": "Survival Analysis Model",
+    "model_type": "Cox Proportional Hazards",
+    "evaluation_date": "2026-11-19 17:12:10",
+    "total_samples": 7043,
+    "metrics": {
+      "concordance_index": 0.1563297350674363,
+      "average_expected_lifetime": 51.142014766434755,
+      "median_expected_lifetime": 55.95,
+      "std_expected_lifetime": 15.319727480823182
+    },
+    "survival_by_contract": {
+      "expected_lifetime_months": {
+        "Month-to-month": 39.56,
+        "One year": 62.88,
+        "Two year": 67.42
+      },
+      "median_survival_months": {
+        "Month-to-month": 43.12,
+        "One year": 71.99,
+        "Two year": 72.0
+      },
+      "churn": {
+        "Month-to-month": 0.43,
+        "One year": 0.11,
+        "Two year": 0.03
+      }
+    }
+  },
+  "segmentation_model": {
+    "model_name": "Customer Segmentation Model",
+    "model_type": "KMeans Clustering",
+    "evaluation_date": "2026-11-19 17:12:10",
+    "total_samples": 7043,
+    "num_segments": 5,
+    "segment_profiles": {
+      "Low-Value At-Risk": {
+        "customer_count": 1358,
+        "avg_churn_prob": 0.79,
+        "avg_clv": 113.64,
+        "avg_tenure": 7.44,
+        "avg_monthly_charges": 75.13,
+        "churn_rate": 0.7
+      },
+      "Mid-Value At-Risk": {
+        "customer_count": 1018,
+        "avg_churn_prob": 0.62,
+        "avg_clv": 233.5,
+        "avg_tenure": 30.99,
+        "avg_monthly_charges": 89.42,
+        "churn_rate": 0.41
+      },
+      "Budget Customers": {
+        "customer_count": 2158,
+        "avg_churn_prob": 0.24,
+        "avg_clv": 158.33,
+        "avg_tenure": 26.08,
+        "avg_monthly_charges": 27.11,
+        "churn_rate": 0.14
+      },
+      "Champions": {
+        "customer_count": 1369,
+        "avg_churn_prob": 0.19,
+        "avg_clv": 123.45,
+        "avg_tenure": 61.79,
+        "avg_monthly_charges": 96.42,
+        "churn_rate": 0.09
+      },
+      "Loyal Customers": {
+        "customer_count": 1140,
+        "avg_churn_prob": 0.16,
+        "avg_clv": 344.63,
+        "avg_tenure": 39.87,
+        "avg_monthly_charges": 63.64,
+        "churn_rate": 0.06
+      }
+    },
+    "metrics": {
+      "average_clv": 183.9512636660514,
+      "total_clv": 1295568.75,
+      "clv_std": 244.80154616155733
+    }
+  }
+}
